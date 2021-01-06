@@ -16,14 +16,20 @@ default_destination = os.path.join(default_source, 'resized')
 
 
 class Resizer:
-    def __init__(self, source=default_source, destination=None, size=700):
-        print(default_source)
+    def __init__(self, source=None, destination=None, size=None):
+        if not source:
+            source = os.getcwd()
         if source and not destination:
             self.destination = os.path.join(source, 'resized')
         else:
             self.destination = destination
         self.source = source
+        if size:
+            size = int(size)
+        else:
+            size = 700
         self.size = (size, size)
+
 
     def resize(self):
         count = 1
@@ -39,9 +45,13 @@ class Resizer:
                 im.thumbnail(self.size, Image.ANTIALIAS)
                 im.save(os.path.join(self.destination, f + '-resized.jpg'), 'JPEG', quality=90)
                 count += 1
-        print("{} images resized and saved to {}".format(count, self.destination))
+
+        if count < 1:
+            print("No resizeable images found")
+        else:
+            print("{} images resized and saved to {}".format(count, self.destination))
 
 
 if __name__ == '__main__':
-    resizer = Resizer(source=args.source, destination=args.destination, size=int(args.size))
+    resizer = Resizer(source=args.source, destination=args.destination, size=args.size)
     resizer.resize()
